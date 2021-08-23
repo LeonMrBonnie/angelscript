@@ -43,12 +43,12 @@ jobs:
           asset_path: ./build/Release/angelscript.lib
           asset_name: angelscript.lib
           asset_content_type: application/octet-stream
-    - name: Upload pdb
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/Release/angelscript.pdb
-          asset_name: angelscript.pdb
-          asset_content_type: application/octet-stream
+    #- name: Upload pdb
+    #    uses: actions/upload-release-asset@v1
+    #    env:
+    #      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #    with:
+    #      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    #      asset_path: ./build/Release/angelscript.pdb
+    #      asset_name: angelscript.pdb
+    #      asset_content_type: application/octet-stream

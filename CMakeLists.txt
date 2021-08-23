@@ -171,10 +171,10 @@ endif()
 
 # Enable PDB generation
 if(MSVC)
-    target_compile_options(${ANGELSCRIPT_LIBRARY_NAME} PRIVATE /Zi)
-    set_target_properties(${ANGELSCRIPT_LIBRARY_NAME} PROPERTIES 
-        LINK_FLAGS "/INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF"
-    )
+    #target_compile_options(${ANGELSCRIPT_LIBRARY_NAME} PRIVATE /Zi)
+    #set_target_properties(${ANGELSCRIPT_LIBRARY_NAME} PROPERTIES 
+    #    LINK_FLAGS "/INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF"
+    #)
 endif()
 
 target_compile_definitions(${ANGELSCRIPT_LIBRARY_NAME} PRIVATE -DANGELSCRIPT_EXPORT -D_LIB)
