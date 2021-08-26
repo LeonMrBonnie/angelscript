@@ -3,6 +3,6 @@ if [ ! -d "./build" ]; then
 fi
 
 cd build
-cmake -G"Ninja" ..
+cmake -G"Unix Makefiles" ..
 cmake --build . --config Release
 cd ..
