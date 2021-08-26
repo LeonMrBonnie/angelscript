@@ -5,47 +5,96 @@ on:
     tags:
       - "v*"
 
-env:
-  BUILD_TYPE: Release
-
 jobs:
-  build:
-    runs-on: windows-latest
+  build-windows:
+    name: Build Windows
+    runs-on: windows-2019
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      with:
-        submodules: recursive
-        lfs: false
-    
-    - name: Build AngelScript
-      shell: cmd
-      run: build.bat
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          lfs: false
+      
+      - name: Build AngelScript
+        shell: cmd
+        run: build.bat
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-    
-    - name: Upload lib
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./build/Release/angelscript.lib
-        asset_name: angelscript.lib
-        asset_content_type: application/octet-stream
-    #- name: Upload pdb
-    #  uses: actions/upload-release-asset@v1
-    #  env:
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #  with:
-    #    upload_url: ${{ steps.create_release.outputs.upload_url }}
-    #    asset_path: ./build/Release/angelscript.pdb
-    #    asset_name: angelscript.pdb
-    #    asset_content_type: application/octet-stream
+      - uses: actions/upload-artifact@v2
+        with:
+          name: angelscript-windows
+          path: ./build/Release/angelscript.lib
+
+  build-linux:
+    name: Build Linux
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          lfs: false
+      
+      - name: Build AngelScript
+        run: |
+          chmod 777 ./build.sh
+          ./build.sh
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: angelscript-linux
+          path: ./build/libangelscript.a
+
+  release:
+    name: Create Release
+    runs-on: ubuntu-18.04
+    needs: [build-windows, build-linux]
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: |
+            angelscript-windows
+            angelscript-linux
+          path: dist
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+
+      - name: Upload windows artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/angelscript.lib
+          asset_name: angelscript.lib
+          asset_content_type: application/octet-stream
+
+      - name: Upload linux artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/libangelscript.a
+          asset_name: libangelscript.a
+          asset_content_type: application/octet-stream
+
+  delete-artifacts:
+    name: Delete artifacts
+    runs-on: ubuntu-18.04
+    needs: [release]
+    steps:
+      - name: Delete artifacts
+        uses: geekyeggo/delete-artifact@v1
+        with:
+          name: |
+            angelscript-windows
+            angelscript-linux
