@@ -70,7 +70,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/angelscript.lib
+          asset_path: ./dist/angelscript-windows/angelscript.lib
           asset_name: angelscript.lib
           asset_content_type: application/octet-stream
 
@@ -80,7 +80,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/libangelscript.a
+          asset_path: ./dist/angelscript-linux/libangelscript.a
           asset_name: libangelscript.a
           asset_content_type: application/octet-stream
 
